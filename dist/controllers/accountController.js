@@ -1,41 +1,45 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requestRefund = exports.getAccountInfo = exports.deposit = void 0;
+exports.requestRefund = exports.getAccountInfo = exports.deposit = exports.getBalance = void 0;
 const brokerService_1 = require("../services/brokerService");
 /**
- * @swagger
- * /account/deposit:
- *   post:
- *     summary: Deposit funds to account
- *     tags: [Account]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - amount
- *             properties:
- *               amount:
- *                 type: number
- *                 description: Amount to deposit in ETH
- *     responses:
- *       200:
- *         description: Deposit successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *       400:
- *         description: Invalid request
- *       500:
- *         description: Server error
+ * Recursively converts BigInt values to strings.
+ */
+const convertBigIntToString = (data) => {
+    if (data === null || data === undefined)
+        return data;
+    if (typeof data === "bigint")
+        return data.toString();
+    if (Array.isArray(data)) {
+        return data.map(convertBigIntToString);
+    }
+    if (typeof data === "object") {
+        const result = {};
+        for (const key in data) {
+            result[key] = convertBigIntToString(data[key]);
+        }
+        return result;
+    }
+    return data;
+};
+/**
+ * GET /account/balance
+ */
+const getBalance = async (req, res) => {
+    try {
+        const balance = await brokerService_1.brokerService.getBalance();
+        res.status(200).json({
+            success: true,
+            balance: convertBigIntToString(balance)
+        });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+exports.getBalance = getBalance;
+/**
+ * POST /account/deposit
  */
 const deposit = async (req, res) => {
     try {
@@ -43,7 +47,7 @@ const deposit = async (req, res) => {
         if (!amount || isNaN(amount) || amount <= 0) {
             return res.status(400).json({
                 success: false,
-                error: 'Valid amount required'
+                error: "Valid amount required"
             });
         }
         const result = await brokerService_1.brokerService.depositFunds(Number(amount));
@@ -61,105 +65,23 @@ const deposit = async (req, res) => {
 };
 exports.deposit = deposit;
 /**
- * Helper function to convert BigInt values to strings in an object
- */
-const convertBigIntToString = (data) => {
-    if (data === null || data === undefined) {
-        return data;
-    }
-    if (typeof data === 'bigint') {
-        return data.toString();
-    }
-    if (Array.isArray(data)) {
-        return data.map(item => convertBigIntToString(item));
-    }
-    if (typeof data === 'object') {
-        const result = {};
-        for (const key in data) {
-            result[key] = convertBigIntToString(data[key]);
-        }
-        return result;
-    }
-    return data;
-};
-/**
- * @swagger
- * /account/info:
- *   get:
- *     summary: Get account information
- *     tags: [Account]
- *     description: Retrieve account information including ledger, infers, and fines
- *     responses:
- *       200:
- *         description: Account information retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 accountInfo:
- *                   type: object
- *                   description: Account information details
- *       400:
- *         description: Invalid request
- *       500:
- *         description: Server error
+ * GET /account/info
  */
 const getAccountInfo = async (req, res) => {
     try {
-        const balanceInfo = await brokerService_1.brokerService.getBalance();
-        console.log(balanceInfo);
-        // Convert BigInt values to strings
-        const serializedBalanceInfo = convertBigIntToString(balanceInfo);
-        return res.status(200).json({
+        const info = await brokerService_1.brokerService.getBalance();
+        res.status(200).json({
             success: true,
-            accountInfo: serializedBalanceInfo
+            accountInfo: convertBigIntToString(info)
         });
     }
     catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error.message
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.getAccountInfo = getAccountInfo;
 /**
- * @swagger
- * /account/refund:
- *   post:
- *     summary: Request refund for unused funds
- *     tags: [Account]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - amount
- *             properties:
- *               amount:
- *                 type: number
- *                 description: Amount to refund in ETH
- *     responses:
- *       200:
- *         description: Refund requested successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *       400:
- *         description: Invalid request
- *       500:
- *         description: Server error
+ * POST /account/refund
  */
 const requestRefund = async (req, res) => {
     try {
@@ -167,7 +89,7 @@ const requestRefund = async (req, res) => {
         if (!amount || isNaN(amount) || amount <= 0) {
             return res.status(400).json({
                 success: false,
-                error: 'Valid amount required'
+                error: "Valid amount required"
             });
         }
         const result = await brokerService_1.brokerService.requestRefund(Number(amount));
@@ -177,10 +99,7 @@ const requestRefund = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error.message
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.requestRefund = requestRefund;

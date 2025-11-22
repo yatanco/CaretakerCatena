@@ -1,11 +1,18 @@
-import express from 'express';
-import * as accountController from '../controllers/accountController';
+import express from "express";
+import * as accountController from "../controllers/accountController";
 
 const router = express.Router();
 
-// Account routes
-router.get('/info', accountController.getAccountInfo);
-router.post('/deposit', accountController.deposit);
-router.post('/refund', accountController.requestRefund);
+// GET /api/account/balance
+router.get("/balance", accountController.getBalance);
 
-export default router; 
+// GET /api/account/info
+router.get("/info", accountController.getAccountInfo);
+
+// POST /api/account/deposit
+router.post("/deposit", accountController.deposit);
+
+// POST /api/account/refund
+router.post("/refund", accountController.requestRefund);
+
+export default router;
