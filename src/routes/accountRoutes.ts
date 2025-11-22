@@ -3,16 +3,19 @@ import * as accountController from "../controllers/accountController";
 
 const router = express.Router();
 
-// GET /api/account/balance
-router.get("/balance", accountController.getBalance);
-
-// GET /api/account/info
+// Account info
 router.get("/info", accountController.getAccountInfo);
 
-// POST /api/account/deposit
+// Deposit funds
 router.post("/deposit", accountController.deposit);
 
-// POST /api/account/refund
+// Request refund
 router.post("/refund", accountController.requestRefund);
+
+// Get balance
+router.get("/balance", accountController.getBalance);
+
+// Acknowledge provider (make sure this exists in the controller)
+router.post("/acknowledge", accountController.acknowledgeProvider);
 
 export default router;
