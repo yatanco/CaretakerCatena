@@ -39,14 +39,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const accountController = __importStar(require("../controllers/accountController"));
 const router = express_1.default.Router();
-// Account info
+// GET /api/account/info
 router.get("/info", accountController.getAccountInfo);
-// Deposit funds
+// POST /api/account/deposit
 router.post("/deposit", accountController.deposit);
-// Request refund
+// POST /api/account/refund
 router.post("/refund", accountController.requestRefund);
-// Get balance
+// GET /api/account/balance
 router.get("/balance", accountController.getBalance);
-// Acknowledge provider (make sure this exists in the controller)
-router.post("/acknowledge", accountController.acknowledgeProvider);
 exports.default = router;

@@ -3,38 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CaretakerCatena</title>
+  <title>CaretakerCatena • Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>CaretakerCatena</h1>
-  </header>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-logo">🧠</span>
+        <div>
+          <h1>CaretakerCatena</h1>
+          <p class="subtitle">0G-powered tools for caretakers</p>
+        </div>
+      </div>
+      <div class="status-pill" id="status">
+        Checking backend…
+      </div>
+    </header>
 
-  <div id="status">Checking backend...</div>
+    <main class="app-main">
+      <section class="card card-wide">
+        <div class="card-header">
+          <h2>Backend Health</h2>
+        </div>
+        <p>
+          Check if the 0G backend is reachable and responding correctly.
+        </p>
+        <button id="checkBtn" class="btn primary">Check Backend Health</button>
+      </section>
 
-  <main>
-    <h2>Welcome</h2>
-    <p>This is your lightweight frontend connected to 0G backend.</p>
-    <button id="checkBtn">Check Backend Health</button>
-    <section>
+      <section class="card">
+        <div class="card-header">
+          <h2>Account</h2>
+          <span class="tag">0G Account</span>
+        </div>
+        <p>Fetch and inspect the current account balance from the 0G node.</p>
+        <button id="btnBalance" class="btn">Check 0G Account</button>
+        <pre id="balanceOut" class="output" aria-label="Account balance output">
+Click “Check 0G Account” to load balance…
+        </pre>
+      </section>
 
-    <h3>Account</h3>
-    <button id="btnBalance">Check 0G Account</button>
-    <pre id="balanceOut"></pre>
-    </section>
-    
-    <section>
-    <h3>Submit Service Request</h3>
-    <button id="btnService">Run Service</button>
-    <pre id="serviceOut"></pre>
-    </section>
+      <section class="card">
+        <div class="card-header">
+          <h2>Service Request</h2>
+          <span class="tag accent">Service Runner</span>
+        </div>
+        <p>Trigger a simple service request to the backend.</p>
 
-  </main>
+        <!-- If later you want configurable input, replace this static text -->
+        <div class="field-group">
+          <label for="serviceInput">Request payload (demo):</label>
+          <input
+            id="serviceInput"
+            type="text"
+            value="test"
+            placeholder="Payload to send to /api/services/run"
+          />
+        </div>
 
-  <footer>
-    Hackathon MVP • Caretakercatena
-  </footer>
+        <button id="btnService" class="btn">Run Service</button>
+        <pre id="serviceOut" class="output" aria-label="Service output">
+Click “Run Service” to execute…
+        </pre>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Hackathon MVP • CaretakerCatena</span>
+      <span class="footer-right">Built on 0G • Localhost:4000</span>
+    </footer>
+  </div>
 
   <script src="app.js"></script>
 </body>
