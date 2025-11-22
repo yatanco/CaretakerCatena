@@ -1,8 +1,10 @@
-// === Backend health ===
+// === Status / health ===
 const statusEl = document.getElementById("status");
 const btn = document.getElementById("checkBtn");
 const balanceBtn = document.getElementById("btnBalance");
 const balanceOut = document.getElementById("balanceOut");
+const systemToggle = document.getElementById("systemToggle");
+const systemBody = document.getElementById("systemBody");
 
 function setStatus(text, mode) {
   if (!statusEl) return;
@@ -28,9 +30,9 @@ async function checkHealth() {
 if (btn) {
   btn.addEventListener("click", checkHealth);
 }
-checkHealth();
+checkHealth(); // run once on load
 
-// === Account balance ===
+// Balance
 if (balanceBtn && balanceOut) {
   balanceBtn.addEventListener("click", async () => {
     balanceOut.textContent = "Loading balance…";
@@ -46,16 +48,24 @@ if (balanceBtn && balanceOut) {
   });
 }
 
-// === Caretaker chat ===
+// System panel toggle
+if (systemToggle && systemBody) {
+  systemToggle.addEventListener("click", () => {
+    systemBody.classList.toggle("hidden");
+  });
+}
+
+// === Chatbot logic ===
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const chatMessages = document.getElementById("chatMessages");
 const chatSend = document.getElementById("chatSend");
 const presetButtons = document.querySelectorAll("[data-preset]");
 
-// Simple in-memory history (frontend-side)
+// In-memory conversation (frontend-side)
 const conversation = [];
 
+// Helper: append message to UI
 function appendMessage(role, text) {
   if (!chatMessages) return;
   const wrapper = document.createElement("div");
@@ -70,12 +80,12 @@ function appendMessage(role, text) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// "Thinking…" bubble
+// Typing indicator
 let typingEl = null;
 function showTyping() {
   if (!chatMessages || typingEl) return;
   typingEl = document.createElement("div");
-  typingEl.className = "chat-message bot";
+  typingEl.className = "chat-message bot typing";
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
@@ -92,6 +102,7 @@ function hideTyping() {
   typingEl = null;
 }
 
+// Send message
 async function sendMessage(text) {
   if (!chatInput || !chatMessages || !chatSend) return;
 
@@ -112,22 +123,42 @@ async function sendMessage(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: trimmed,
-        // If your backend supports it, you can also send:
-        // history: conversation,
-        // mode: "caretaker-chat"
+        history: conversation // send full history so backend can build prompt
       })
     });
 
-    if (!res.ok) throw new Error("Chat request failed");
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
 
-    // Try common fields, then fall back to raw JSON
+    if (!res.ok) {
+      const msg =
+        data.reply ||
+        data.error ||
+        data.message ||
+        `Server error (status ${res.status})`;
+      hideTyping();
+      appendMessage("bot", msg);
+      return;
+    }
+
+    // 🔧 Clean reply selection: prefer plain text fields, never dump full JSON
     const reply =
-      data.reply ||
-      data.output ||
-      data.message ||
-      data.text ||
-      JSON.stringify(data, null, 2);
+      // 1) Our explicit reply field (from backend)
+      (data && data.reply) ??
+      // 2) Direct 0G-style shape: { content, metadata }
+      (data && data.content) ??
+      // 3) Nested 0G result: { result: { response: { content } } }
+      (data &&
+      data.result &&
+      data.result.response &&
+      typeof data.result.response.content === "string"
+        ? data.result.response.content
+        : null) ??
+      // 4) Other possible simple text fields
+      (data && data.result) ??
+      (data && data.message) ??
+      (data && data.text) ??
+      // 5) Fallback
+      "The server responded, but I couldn't read the reply.";
 
     hideTyping();
     appendMessage("bot", reply);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CaretakerCatena • Dashboard</title>
+  <title>CaretakerCatena • Caregiver Chat</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@
         <span class="brand-logo">🧠</span>
         <div>
           <h1>CaretakerCatena</h1>
-          <p class="subtitle">0G-powered tools for caretakers</p>
+          <p class="subtitle">AI companion for Alzheimer’s caregivers</p>
         </div>
       </div>
       <div class="status-pill" id="status">
@@ -22,45 +22,20 @@
     </header>
 
     <main class="app-main">
-      <!-- Backend health -->
-      <section class="card card-wide">
-        <div class="card-header">
-          <h2>Backend Health</h2>
-        </div>
-        <p>
-          Check if the 0G backend is reachable and responding correctly.
-        </p>
-        <button id="checkBtn" class="btn primary">Check Backend Health</button>
-      </section>
-
-      <!-- Account -->
-      <section class="card">
-        <div class="card-header">
-          <h2>Account</h2>
-          <span class="tag">0G Account</span>
-        </div>
-        <p>Fetch and inspect the current account balance from the 0G node.</p>
-        <button id="btnBalance" class="btn">Check 0G Account</button>
-        <pre id="balanceOut" class="output" aria-label="Account balance output">
-Click “Check 0G Account” to load balance…
-        </pre>
-      </section>
-
-      <!-- Caretaker chat -->
-      <section class="card card-chat">
+      <!-- MAIN CHAT -->
+      <section class="card card-chat-main">
         <div class="card-header">
           <h2>Caretaker Chat</h2>
           <span class="tag accent">AI Companion</span>
         </div>
-        <p>
-          Ask questions about caregiving, daily routines, communication, and your own emotional wellbeing.
-          This is not medical advice and doesn’t replace your doctor.
+        <p class="card-subtitle">
+          Talk about your daily caregiving challenges. This is not medical advice and doesn’t replace your doctor.
         </p>
 
         <div class="chat-messages" id="chatMessages" aria-label="Chat conversation">
           <div class="chat-message bot">
             <div class="bubble">
-              Hi, I’m your caregiving companion.
+              Hi, I’m your caregiving companion.  
               Tell me a bit about who you’re taking care of and what’s hardest right now.
             </div>
           </div>
@@ -70,7 +45,7 @@ Click “Check 0G Account” to load balance…
           <textarea
             id="chatInput"
             rows="2"
-            placeholder="Ask me something like: “How can I structure the afternoon so my mom gets less agitated?”"
+            placeholder="Ask me something like: “My mom keeps asking who is older, my sister or me. What do I do?”"
           ></textarea>
           <button type="submit" class="btn primary" id="chatSend">
             Send
@@ -79,7 +54,7 @@ Click “Check 0G Account” to load balance…
 
         <div class="chat-helper">
           <button type="button" class="chip" data-preset>
-            How do I respond when my dad repeats the same question?
+            My mom keeps repeating the same question.
           </button>
           <button type="button" class="chip" data-preset>
             Help me plan today so I also get some rest.
@@ -87,6 +62,35 @@ Click “Check 0G Account” to load balance…
           <button type="button" class="chip" data-preset>
             My relative refuses to shower, what can I do?
           </button>
+        </div>
+      </section>
+
+      <!-- SYSTEM PANEL (HEALTH + ACCOUNT), TUCKED AWAY -->
+      <section class="card system-card">
+        <button class="system-toggle" id="systemToggle" type="button">
+          System panel · backend & 0G status
+        </button>
+        <div class="system-body" id="systemBody">
+          <!-- Backend Health -->
+          <div class="system-block">
+            <div class="system-block-header">
+              <h3>Backend Health</h3>
+            </div>
+            <p>Check if the API on <code>localhost:4000</code> is reachable.</p>
+            <button id="checkBtn" class="btn small">Check health</button>
+          </div>
+
+          <!-- Account -->
+          <div class="system-block">
+            <div class="system-block-header">
+              <h3>0G Account</h3>
+            </div>
+            <p>Fetch the current 0G ledger / account balance.</p>
+            <button id="btnBalance" class="btn small">Check account</button>
+            <pre id="balanceOut" class="output small" aria-label="Account balance output">
+Click “Check account” to load balance…
+            </pre>
+          </div>
         </div>
       </section>
     </main>
