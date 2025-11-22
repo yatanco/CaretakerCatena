@@ -252,3 +252,108 @@ body {
   padding: 0.45rem 0.75rem;
   font-size: 0.9rem;
   background: rgba(15, 23
+
+/* Chat layout */
+.card-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* Messages container */
+.chat-messages {
+  margin-top: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: radial-gradient(circle at top left, #020617, #020617);
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Single message */
+.chat-message {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.chat-message.user {
+  justify-content: flex-end;
+}
+
+.chat-message.bot {
+  justify-content: flex-start;
+}
+
+/* Message bubbles */
+.chat-message .bubble {
+  max-width: 80%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.chat-message.user .bubble {
+  border-bottom-right-radius: 0.2rem;
+  background: linear-gradient(135deg, var(--accent), #22c55e);
+  color: #f9fafb;
+}
+
+.chat-message.bot .bubble {
+  border-bottom-left-radius: 0.2rem;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  color: #e5e7eb;
+}
+
+/* Input row */
+.chat-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.chat-input-row textarea {
+  flex: 1;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.6rem 0.7rem;
+  font-size: 0.9rem;
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  resize: none;
+}
+
+/* Preset chips */
+.chat-helper {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  border: none;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.08s ease;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(148, 163, 184, 0.95);
+}

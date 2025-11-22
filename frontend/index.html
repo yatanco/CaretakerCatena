@@ -22,6 +22,7 @@
     </header>
 
     <main class="app-main">
+      <!-- Backend health -->
       <section class="card card-wide">
         <div class="card-header">
           <h2>Backend Health</h2>
@@ -32,6 +33,7 @@
         <button id="checkBtn" class="btn primary">Check Backend Health</button>
       </section>
 
+      <!-- Account -->
       <section class="card">
         <div class="card-header">
           <h2>Account</h2>
@@ -44,28 +46,48 @@ Click “Check 0G Account” to load balance…
         </pre>
       </section>
 
-      <section class="card">
+      <!-- Caretaker chat -->
+      <section class="card card-chat">
         <div class="card-header">
-          <h2>Service Request</h2>
-          <span class="tag accent">Service Runner</span>
+          <h2>Caretaker Chat</h2>
+          <span class="tag accent">AI Companion</span>
         </div>
-        <p>Trigger a simple service request to the backend.</p>
+        <p>
+          Ask questions about caregiving, daily routines, communication, and your own emotional wellbeing.
+          This is not medical advice and doesn’t replace your doctor.
+        </p>
 
-        <!-- If later you want configurable input, replace this static text -->
-        <div class="field-group">
-          <label for="serviceInput">Request payload (demo):</label>
-          <input
-            id="serviceInput"
-            type="text"
-            value="test"
-            placeholder="Payload to send to /api/services/run"
-          />
+        <div class="chat-messages" id="chatMessages" aria-label="Chat conversation">
+          <div class="chat-message bot">
+            <div class="bubble">
+              Hi, I’m your caregiving companion.
+              Tell me a bit about who you’re taking care of and what’s hardest right now.
+            </div>
+          </div>
         </div>
 
-        <button id="btnService" class="btn">Run Service</button>
-        <pre id="serviceOut" class="output" aria-label="Service output">
-Click “Run Service” to execute…
-        </pre>
+        <form class="chat-input-row" id="chatForm">
+          <textarea
+            id="chatInput"
+            rows="2"
+            placeholder="Ask me something like: “How can I structure the afternoon so my mom gets less agitated?”"
+          ></textarea>
+          <button type="submit" class="btn primary" id="chatSend">
+            Send
+          </button>
+        </form>
+
+        <div class="chat-helper">
+          <button type="button" class="chip" data-preset>
+            How do I respond when my dad repeats the same question?
+          </button>
+          <button type="button" class="chip" data-preset>
+            Help me plan today so I also get some rest.
+          </button>
+          <button type="button" class="chip" data-preset>
+            My relative refuses to shower, what can I do?
+          </button>
+        </div>
       </section>
     </main>
 
