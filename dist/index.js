@@ -30,6 +30,10 @@ const apiPrefix = '/api';
 // Register routes
 app.use(`${apiPrefix}/account`, accountRoutes_1.default);
 app.use(`${apiPrefix}/services`, serviceRoutes_1.default);
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 // Root route with basic info
 app.get('/', (req, res) => {
     res.json({

@@ -33,6 +33,12 @@ const apiPrefix = '/api';
 app.use(`${apiPrefix}/account`, accountRoutes);
 app.use(`${apiPrefix}/services`, serviceRoutes);
 
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Root route with basic info
 app.get('/', (req, res) => {
   res.json({
@@ -55,6 +61,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     message: err.message
   });
 });
+
 
 // Initialize application and start server
 const startServer = async () => {
