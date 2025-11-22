@@ -1,14 +1,11 @@
+// === Backend health ===
 const statusEl = document.getElementById("status");
 const btn = document.getElementById("checkBtn");
-
 const balanceBtn = document.getElementById("btnBalance");
 const balanceOut = document.getElementById("balanceOut");
 
-const serviceBtn = document.getElementById("btnService");
-const serviceOut = document.getElementById("serviceOut");
-const serviceInput = document.getElementById("serviceInput");
-
 function setStatus(text, mode) {
+  if (!statusEl) return;
   statusEl.textContent = text;
   statusEl.classList.remove("status-ok", "status-error");
   if (mode === "ok") statusEl.classList.add("status-ok");
@@ -16,66 +13,51 @@ function setStatus(text, mode) {
 }
 
 async function checkHealth() {
-  setStatus("Checking backend…", null);
+  setStatus("Checking backend…");
   try {
     const res = await fetch("http://localhost:4000/health");
     if (!res.ok) throw new Error("Failed");
-    const data = await res.json();
-    // If backend sends something like { status: "ok" } you can use it here
+    await res.json().catch(() => ({}));
     setStatus("Backend OK ✔️", "ok");
-    console.log("Health:", data);
   } catch (e) {
     console.error(e);
     setStatus("Backend unreachable ✖️", "error");
   }
 }
 
-btn.addEventListener("click", checkHealth);
-checkHealth(); // run on load
+if (btn) {
+  btn.addEventListener("click", checkHealth);
+}
+checkHealth();
 
-balanceBtn.addEventListener("click", async () => {
-  balanceOut.textContent = "Loading balance…";
-  try {
-    const res = await fetch("http://localhost:4000/api/account/balance");
-    if (!res.ok) throw new Error("Failed to fetch balance");
-    const data = await res.json();
-    balanceOut.textContent = JSON.stringify(data, null, 2);
-  } catch (e) {
-    console.error(e);
-    balanceOut.textContent = "Error fetching balance.";
-  }
-});
+// === Account balance ===
+if (balanceBtn && balanceOut) {
+  balanceBtn.addEventListener("click", async () => {
+    balanceOut.textContent = "Loading balance…";
+    try {
+      const res = await fetch("http://localhost:4000/api/account/balance");
+      if (!res.ok) throw new Error("Failed to fetch balance");
+      const data = await res.json();
+      balanceOut.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      console.error(e);
+      balanceOut.textContent = "Error fetching balance.";
+    }
+  });
+}
 
-serviceBtn.addEventListener("click", async () => {
-  const input = serviceInput?.value ?? "test";
-  serviceOut.textContent = "Running service…";
-
-  try {
-    const res = await fetch("http://localhost:4000/api/services/run", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ input })
-    });
-    if (!res.ok) throw new Error("Service request failed");
-    const data = await res.json();
-    serviceOut.textContent = JSON.stringify(data, null, 2);
-  } catch (e) {
-    console.error(e);
-    serviceOut.textContent = "Error running service.";
-  }
-});
-// === Chatbot logic ===
+// === Caretaker chat ===
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const chatMessages = document.getElementById("chatMessages");
 const chatSend = document.getElementById("chatSend");
 const presetButtons = document.querySelectorAll("[data-preset]");
 
-// Simple in-memory history (frontend-side, optional)
+// Simple in-memory history (frontend-side)
 const conversation = [];
 
-// Helper: append a message to the UI
 function appendMessage(role, text) {
+  if (!chatMessages) return;
   const wrapper = document.createElement("div");
   wrapper.className = `chat-message ${role === "user" ? "user" : "bot"}`;
 
@@ -88,10 +70,10 @@ function appendMessage(role, text) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Helper: show "typing..." bubble
+// "Thinking…" bubble
 let typingEl = null;
 function showTyping() {
-  if (typingEl) return;
+  if (!chatMessages || typingEl) return;
   typingEl = document.createElement("div");
   typingEl.className = "chat-message bot";
 
@@ -110,12 +92,12 @@ function hideTyping() {
   typingEl = null;
 }
 
-// Send message to backend
 async function sendMessage(text) {
+  if (!chatInput || !chatMessages || !chatSend) return;
+
   const trimmed = text.trim();
   if (!trimmed) return;
 
-  // add to UI + history
   appendMessage("user", trimmed);
   conversation.push({ role: "user", content: trimmed });
   chatInput.value = "";
@@ -130,21 +112,21 @@ async function sendMessage(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: trimmed,
-        // OPTIONAL: if your backend supports history, send it:
+        // If your backend supports it, you can also send:
         // history: conversation,
         // mode: "caretaker-chat"
       })
     });
 
     if (!res.ok) throw new Error("Chat request failed");
-
     const data = await res.json();
 
-    // Adjust this depending on your backend response shape:
+    // Try common fields, then fall back to raw JSON
     const reply =
       data.reply ||
       data.output ||
       data.message ||
+      data.text ||
       JSON.stringify(data, null, 2);
 
     hideTyping();
@@ -164,13 +146,15 @@ async function sendMessage(text) {
   }
 }
 
-// Handle form submit
-chatForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  sendMessage(chatInput.value);
-});
+// Form submit
+if (chatForm && chatInput) {
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    sendMessage(chatInput.value);
+  });
+}
 
-// Preset chips: clicking fills + sends
+// Preset chips
 presetButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     const text = btn.textContent.trim();
