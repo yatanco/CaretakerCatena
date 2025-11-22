@@ -102,6 +102,83 @@ function hideTyping() {
   typingEl = null;
 }
 
+// Helper: try to pull a clean text reply out of whatever the backend sent
+function extractReply(data) {
+  if (data == null) return null;
+
+  // If backend already gives a top-level `content`
+  if (typeof data.content === "string") return data.content;
+
+  // If backend gives `reply`
+  if (data.reply != null) {
+    const r = data.reply;
+
+    // reply is plain string
+    if (typeof r === "string") {
+      const trimmed = r.trim();
+
+      // If it *looks* like JSON, try to parse and grab `.content`
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed.content === "string") {
+            return parsed.content;
+          }
+          return trimmed; // fallback to the original string
+        } catch {
+          return trimmed;
+        }
+      }
+
+      // Just a normal text reply
+      return trimmed;
+    }
+
+    // reply is an object like { content, metadata }
+    if (typeof r === "object" && r !== null) {
+      if (typeof r.content === "string") return r.content;
+      if (r.response && typeof r.response.content === "string") {
+        return r.response.content;
+      }
+    }
+  }
+
+  // If we have a `result` field
+  if (data.result != null) {
+    const res = data.result;
+
+    if (typeof res === "string") {
+      const trimmed = res.trim();
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed.content === "string") return parsed.content;
+          if (parsed && parsed.response && typeof parsed.response.content === "string") {
+            return parsed.response.content;
+          }
+          return trimmed;
+        } catch {
+          return trimmed;
+        }
+      }
+      return trimmed;
+    }
+
+    if (typeof res === "object" && res !== null) {
+      if (typeof res.content === "string") return res.content;
+      if (res.response && typeof res.response.content === "string") {
+        return res.response.content;
+      }
+    }
+  }
+
+  // Other possible text fields
+  if (typeof data.message === "string") return data.message;
+  if (typeof data.text === "string") return data.text;
+
+  return null;
+}
+
 // Send message
 async function sendMessage(text) {
   if (!chatInput || !chatMessages || !chatSend) return;
@@ -131,33 +208,16 @@ async function sendMessage(text) {
 
     if (!res.ok) {
       const msg =
-        data.reply ||
+        extractReply(data) ||
         data.error ||
-        data.message ||
         `Server error (status ${res.status})`;
       hideTyping();
       appendMessage("bot", msg);
       return;
     }
 
-    // 🔧 Clean reply selection: prefer plain text fields, never dump full JSON
     const reply =
-      // 1) Our explicit reply field (from backend)
-      (data && data.reply) ??
-      // 2) Direct 0G-style shape: { content, metadata }
-      (data && data.content) ??
-      // 3) Nested 0G result: { result: { response: { content } } }
-      (data &&
-      data.result &&
-      data.result.response &&
-      typeof data.result.response.content === "string"
-        ? data.result.response.content
-        : null) ??
-      // 4) Other possible simple text fields
-      (data && data.result) ??
-      (data && data.message) ??
-      (data && data.text) ??
-      // 5) Fallback
+      extractReply(data) ||
       "The server responded, but I couldn't read the reply.";
 
     hideTyping();
