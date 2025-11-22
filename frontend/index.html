@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caretakercatena</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: #222;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    #status {
+      padding: 0.5rem;
+      text-align: center;
+      background: #ddd;
+      font-size: 0.9rem;
+    }
+    main {
+      flex: 1;
+      padding: 1rem;
+    }
+    footer {
+      background: #222;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Caretakercatena</h1>
+  </header>
+
+  <div id="status">Checking backend...</div>
+
+  <main>
+    <h2>Welcome</h2>
+    <p>This is the frontend skeleton connected to your 0G backend.</p>
+    <button id="checkBtn">Check Backend Health</button>
+  </main>
+
+  <footer>
+    <p>Hackathon MVP • Caretakercatena</p>
+  </footer>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const btn = document.getElementById('checkBtn');
+
+    async function checkHealth() {
+      statusEl.textContent = 'Checking backend...';
+      try {
+        const res = await fetch('http://localhost:4000/health');
+        if (!res.ok) throw new Error('Failed');
+        const data = await res.json();
+        statusEl.textContent = 'Backend OK ✔️';
+      } catch (e) {
+        statusEl.textContent = 'Backend unreachable ✖️';
+      }
+    }
+
+    checkHealth();
+    btn.addEventListener('click', checkHealth);
+  </script>
+</body>
+</html>
