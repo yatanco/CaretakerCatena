@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CaretakerCatena • Caregiver Chat</title>
+  <title>CaretakerCatena • Caregiver Companion</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-shell">
+    <!-- HEADER -->
     <header class="app-header">
       <div class="brand">
         <span class="brand-logo">🧠</span>
@@ -22,20 +23,126 @@
     </header>
 
     <main class="app-main">
-      <!-- MAIN CHAT -->
+
+<!-- PATIENT OVERVIEW (collapsible) -->
+<section class="card patient-card collapsible">
+  <button class="collapse-toggle" id="patientToggle" type="button">
+    <span id="patientNameHeader">Patient Overview</span>
+    <span class="chevron">▾</span>
+  </button>
+
+  <div class="collapse-body" id="patientBody">
+    <p class="card-subtitle">
+      A quick overview of essential information about your loved one.
+    </p>
+
+    <div class="profile-fields">
+      <div class="profile-field">
+        <span class="profile-label">Name</span>
+        <span class="profile-value" id="profileName">—</span>
+      </div>
+      <div class="profile-field">
+        <span class="profile-label">Diagnosis</span>
+        <span class="profile-value" id="profileDiagnosis">—</span>
+      </div>
+      <div class="profile-field">
+        <span class="profile-label">Living situation</span>
+        <span class="profile-value" id="profileLiving">—</span>
+      </div>
+      <div class="profile-field">
+        <span class="profile-label">Personality & Preferences</span>
+        <span class="profile-value" id="profilePersonality">—</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1rem; font-size:1rem;">Medications & Daily Schedule</h3>
+
+    <div class="pill-list-block">
+      <div id="pillList" class="pill-list">
+        <p class="pill-empty">
+          No medication items yet. Add pills or routine actions below.
+        </p>
+      </div>
+    </div>
+
+    <div class="pill-form">
+      <input
+        id="pillNameInput"
+        type="text"
+        class="pill-input"
+        placeholder="Medication or routine (e.g. Memantine, Morning walk)"
+      />
+      <input
+        id="pillDoseInput"
+        type="text"
+        class="pill-input"
+        placeholder="Dose / notes (e.g. 10 mg)"
+      />
+      <input
+        id="pillTimeInput"
+        type="time"
+        class="pill-input pill-time"
+      />
+      <button id="pillAddBtn" class="btn small" type="button">
+        Add
+      </button>
+    </div>
+
+    <button id="pillClearBtn" class="btn small" type="button">
+      Clear all items
+    </button>
+  </div>
+</section>
+
+      <!-- CARETAKER JOURNAL -->
+      <section class="card journal-card">
+        <div class="card-header">
+          <h2>Caretaker Journal</h2>
+          <span class="tag">Reflection</span>
+        </div>
+        <p class="card-subtitle">
+          Write down observations, patterns, emotions, or incidents. These notes stay on your device and help improve support over time.
+        </p>
+
+        <div class="journal-input-block">
+          <textarea
+            id="journalInput"
+            rows="3"
+            class="journal-input"
+            placeholder="Example: Tonight she became very agitated at 7pm, but soft music helped calm her down..."
+          ></textarea>
+          <div class="journal-actions">
+            <button id="journalSaveBtn" class="btn small" type="button">
+              Save entry
+            </button>
+            <span id="journalStatus" class="journal-status"></span>
+          </div>
+        </div>
+
+        <div class="journal-list-block">
+          <h3 class="journal-list-title">Recent entries</h3>
+          <div id="journalList" class="journal-list">
+            <p class="journal-empty">
+              No entries yet. Start with a small reflection from today.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CARETAKER CHAT -->
       <section class="card card-chat-main">
         <div class="card-header">
           <h2>Caretaker Chat</h2>
           <span class="tag accent">AI Companion</span>
         </div>
         <p class="card-subtitle">
-          Talk about your daily caregiving challenges. This is not medical advice and doesn’t replace your doctor.
+          Ask about routines, difficult behaviors, communication strategies, or your own wellbeing. Not medical advice.
         </p>
 
         <div class="chat-messages" id="chatMessages" aria-label="Chat conversation">
           <div class="chat-message bot">
             <div class="bubble">
-              Hi, I’m your caregiving companion.  
+              Hi, I’m your caregiving companion.
               Tell me a bit about who you’re taking care of and what’s hardest right now.
             </div>
           </div>
@@ -45,7 +152,7 @@
           <textarea
             id="chatInput"
             rows="2"
-            placeholder="Ask me something like: “My mom keeps asking who is older, my sister or me. What do I do?”"
+            placeholder="Ask something like: “My mom gets agitated at night, what can I do?”"
           ></textarea>
           <button type="submit" class="btn primary" id="chatSend">
             Send
@@ -54,23 +161,27 @@
 
         <div class="chat-helper">
           <button type="button" class="chip" data-preset>
-            My mom keeps repeating the same question.
+            Evening agitation
           </button>
           <button type="button" class="chip" data-preset>
-            Help me plan today so I also get some rest.
+            Repeating questions
           </button>
           <button type="button" class="chip" data-preset>
-            My relative refuses to shower, what can I do?
+            Shower refusal
+          </button>
+          <button type="button" class="chip" data-preset>
+            I need some rest today
           </button>
         </div>
       </section>
 
-      <!-- SYSTEM PANEL (HEALTH + ACCOUNT), TUCKED AWAY -->
+      <!-- SYSTEM PANEL -->
       <section class="card system-card">
         <button class="system-toggle" id="systemToggle" type="button">
           System panel · backend & 0G status
         </button>
-        <div class="system-body" id="systemBody">
+
+        <div class="system-body hidden" id="systemBody">
           <!-- Backend Health -->
           <div class="system-block">
             <div class="system-block-header">
@@ -87,7 +198,11 @@
             </div>
             <p>Fetch the current 0G ledger / account balance.</p>
             <button id="btnBalance" class="btn small">Check account</button>
-            <pre id="balanceOut" class="output small" aria-label="Account balance output">
+            <pre
+              id="balanceOut"
+              class="output small"
+              aria-label="Account balance output"
+            >
 Click “Check account” to load balance…
             </pre>
           </div>

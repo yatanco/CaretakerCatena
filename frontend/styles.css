@@ -42,7 +42,7 @@ body {
 /* APP SHELL */
 .app-shell {
   width: 100%;
-  max-width: 1080px;
+  max-width: 780px;
   margin: 0 auto;
   padding: 1.25rem;
   display: flex;
@@ -60,7 +60,7 @@ body {
   background: linear-gradient(
     135deg,
     rgba(15, 23, 42, 0.95),
-    rgba(15, 23, 42, 0.8)
+    rgba(15, 23, 42, 0.85)
   );
   border-radius: var(--radius-lg);
   border: 1px solid rgba(148, 163, 184, 0.4);
@@ -139,14 +139,18 @@ body {
   box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
 }
 
-/* MAIN LAYOUT */
+/* MAIN LAYOUT: ONE COLUMN STACK */
 .app-main {
   flex: 1;
   margin-top: 1.5rem;
-  display: grid;
-  grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.1fr);
-  gap: 1.5rem;
-  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* GENERIC HIDDEN CLASS (used by JS) */
+.hidden {
+  display: none !important;
 }
 
 /* CARDS */
@@ -239,7 +243,7 @@ body {
 
 /* CHAT */
 .card-chat-main {
-  min-height: 420px;
+  min-height: 380px;
 }
 
 .chat-messages {
@@ -342,6 +346,204 @@ body {
   border-color: rgba(148, 163, 184, 0.95);
 }
 
+/* CARE PROFILE PANEL */
+.profile-fields {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.1rem;
+}
+
+.profile-value {
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+/* CARE JOURNAL */
+.journal-input-block {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.journal-input {
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.6rem 0.7rem;
+  font-size: 0.9rem;
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  resize: vertical;
+}
+
+.journal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.journal-status {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.journal-list-block {
+  margin-top: 0.9rem;
+}
+
+.journal-list-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.journal-list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.journal-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.journal-entry {
+  border-radius: 0.8rem;
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  padding: 0.45rem 0.6rem;
+  background: rgba(15, 23, 42, 0.95);
+  font-size: 0.85rem;
+}
+
+.journal-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  margin-bottom: 0.2rem;
+}
+
+.journal-entry-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.journal-entry-delete {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* PILL / ROUTINE PLANNER */
+.pill-form {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.9fr auto;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.pill-input {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+}
+
+.pill-time {
+  text-align: center;
+}
+
+.pill-list-block {
+  margin-top: 0.8rem;
+}
+
+.pill-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.pill-list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pill-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.pill-item {
+  border-radius: 0.8rem;
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  padding: 0.4rem 0.6rem;
+  background: rgba(15, 23, 42, 0.95);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pill-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.pill-name {
+  font-size: 0.88rem;
+}
+
+.pill-dose {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.pill-time-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pill-delete {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
 /* SYSTEM PANEL */
 .system-card {
   align-self: stretch;
@@ -410,7 +612,7 @@ body {
 
 /* FOOTER */
 .app-footer {
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(31, 41, 55, 0.85);
@@ -429,12 +631,8 @@ body {
 
 /* RESPONSIVE */
 @media (max-width: 860px) {
-  .app-main {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .system-card {
-    order: 2;
+  .app-shell {
+    padding: 0.9rem;
   }
 
   .app-header {
@@ -446,14 +644,72 @@ body {
     align-self: stretch;
     justify-content: center;
   }
+
+  .pill-form {
+    grid-template-columns: 1.3fr 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .pill-time {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 640px) {
-  .app-shell {
-    padding: 0.75rem;
-  }
-
   .chat-messages {
     max-height: 360px;
   }
+}
+.bot-meta {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding-left: 0.55rem;
+  border-left: 2px solid rgba(148, 163, 184, 0.25);
+  line-height: 1.3;
+}
+/* Collapsible sections */
+.collapsible {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Header button */
+.collapse-toggle {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.collapse-toggle:hover .chevron {
+  transform: translateY(2px);
+}
+
+/* Chevron animation */
+.chevron {
+  transition: transform 0.25s ease;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.collapsed .chevron {
+  transform: rotate(-90deg);
+}
+
+/* Hidden body content */
+.collapse-body {
+  padding: 1rem 1.25rem 1.25rem;
+  display: none; /* default collapsed */
+}
+
+.collapse-body.open {
+  display: block;
 }

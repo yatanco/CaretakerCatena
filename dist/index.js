@@ -9,7 +9,7 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_1 = __importDefault(require("./config/swagger"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const startup_1 = require("./startup");
-// Import routes
+const profileController_1 = require("./controllers/profileController");
 const accountRoutes_1 = __importDefault(require("./routes/accountRoutes"));
 const serviceRoutes_1 = __importDefault(require("./routes/serviceRoutes"));
 // Load environment variables
@@ -20,6 +20,9 @@ const PORT = process.env.PORT || 4000;
 // Apply basic middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Profile routes (mom profile)
+app.get('/api/profile/mom', profileController_1.getProfile);
+app.post('/api/profile/mom', profileController_1.updateProfile);
 // API documentation route
 app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.default, {
     explorer: true,
@@ -43,7 +46,7 @@ app.get('/', (req, res) => {
         endpoints: {
             account: `${apiPrefix}/account`,
             services: `${apiPrefix}/services`,
-        }
+        },
     });
 });
 // Simple error handler
@@ -52,7 +55,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({
         success: false,
         error: 'Server error',
-        message: err.message
+        message: err.message,
     });
 });
 // Initialize application and start server

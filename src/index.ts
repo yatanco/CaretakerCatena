@@ -4,8 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import dotenv from 'dotenv';
 import { initializeApplication } from './startup';
-
-// Import routes
+import { getProfile, updateProfile } from './controllers/profileController';
 import accountRoutes from './routes/accountRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 
@@ -20,11 +19,19 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+// Profile routes (mom profile)
+app.get('/api/profile/mom', getProfile);
+app.post('/api/profile/mom', updateProfile);
+
 // API documentation route
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  explorer: true,
-  customSiteTitle: '0G Compute Network API Documentation',
-}));
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customSiteTitle: '0G Compute Network API Documentation',
+  })
+);
 
 // API routes
 const apiPrefix = '/api';
@@ -32,7 +39,6 @@ const apiPrefix = '/api';
 // Register routes
 app.use(`${apiPrefix}/account`, accountRoutes);
 app.use(`${apiPrefix}/services`, serviceRoutes);
-
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -48,27 +54,33 @@ app.get('/', (req, res) => {
     endpoints: {
       account: `${apiPrefix}/account`,
       services: `${apiPrefix}/services`,
-    }
+    },
   });
 });
 
 // Simple error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Error:', err.message);
-  res.status(500).json({
-    success: false,
-    error: 'Server error',
-    message: err.message
-  });
-});
-
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error('Error:', err.message);
+    res.status(500).json({
+      success: false,
+      error: 'Server error',
+      message: err.message,
+    });
+  }
+);
 
 // Initialize application and start server
 const startServer = async () => {
   try {
     // Run initialization tasks
     await initializeApplication();
-    
+
     // Start the server
     app.listen(PORT, () => {
       console.log(`
@@ -85,4 +97,4 @@ const startServer = async () => {
 // Start the application
 startServer();
 
-export default app; 
+export default app;

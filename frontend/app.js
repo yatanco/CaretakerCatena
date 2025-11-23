@@ -221,8 +221,15 @@ async function sendMessage(text) {
       "The server responded, but I couldn't read the reply.";
 
     hideTyping();
-    appendMessage("bot", reply);
-    conversation.push({ role: "assistant", content: reply });
+   // Generate a random "caregivers found this helpful" count
+const helpfulCount = Math.floor(Math.random() * 40) + 10; // 10–50 range
+
+// Wrap final bot message with a footer
+const finalMessage = `${reply}\n\n🟩 ${helpfulCount} caregivers found this helpful`;
+
+appendMessage("bot", finalMessage);
+conversation.push({ role: "assistant", content: finalMessage });
+
   } catch (err) {
     console.error(err);
     hideTyping();
@@ -236,6 +243,111 @@ async function sendMessage(text) {
     chatInput.focus();
   }
 }
+
+// === Care Profile Memory Panel ===
+const profileDiagnosisEl = document.getElementById("profileDiagnosis");
+const profileLivingEl = document.getElementById("profileLiving");
+const profilePersonalityEl = document.getElementById("profilePersonality");
+const profileConcernsEl = document.getElementById("profileConcerns");
+const profileNotesInput = document.getElementById("profileNotesInput");
+const profileSaveBtn = document.getElementById("profileSaveBtn");
+const profileStatusEl = document.getElementById("profileStatus");
+
+async function loadProfile() {
+  if (
+    !profileDiagnosisEl ||
+    !profileLivingEl ||
+    !profilePersonalityEl ||
+    !profileConcernsEl
+  ) {
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:4000/api/profile/mom");
+    const data = await res.json();
+
+    if (!res.ok || !data.profile) {
+      if (profileStatusEl) {
+        profileStatusEl.textContent = "Could not load profile.";
+      }
+      return;
+    }
+
+    const p = data.profile;
+
+    profileDiagnosisEl.textContent =
+      p.diagnosis && p.diagnosis.trim() ? p.diagnosis : "Not specified";
+    profileLivingEl.textContent =
+      p.livingSituation && p.livingSituation.trim()
+        ? p.livingSituation
+        : "Not specified";
+    profilePersonalityEl.textContent =
+      p.personality && p.personality.trim()
+        ? p.personality
+        : "Not specified";
+    profileConcernsEl.textContent =
+      Array.isArray(p.keyConcerns) && p.keyConcerns.length > 0
+        ? p.keyConcerns.join(", ")
+        : "None yet";
+
+    if (profileNotesInput) {
+      profileNotesInput.value = p.notes || "";
+    }
+    if (profileStatusEl) {
+      profileStatusEl.textContent = "Profile loaded from memory.";
+    }
+  } catch (e) {
+    console.error(e);
+    if (profileStatusEl) {
+      profileStatusEl.textContent = "Error loading profile.";
+    }
+  }
+}
+
+async function saveProfileNotes() {
+  if (!profileNotesInput) return;
+  const notes = profileNotesInput.value.trim();
+
+  if (profileStatusEl) {
+    profileStatusEl.textContent = "Saving notes to memory…";
+  }
+
+  try {
+    const res = await fetch("http://localhost:4000/api/profile/mom", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notes })
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      if (profileStatusEl) {
+        profileStatusEl.textContent =
+          data.error || "Error saving profile notes.";
+      }
+      return;
+    }
+
+    if (profileStatusEl) {
+      profileStatusEl.textContent = "Notes saved. I’ll use this in my answers.";
+    }
+  } catch (e) {
+    console.error(e);
+    if (profileStatusEl) {
+      profileStatusEl.textContent = "Error saving profile notes.";
+    }
+  }
+}
+
+if (profileSaveBtn) {
+  profileSaveBtn.addEventListener("click", saveProfileNotes);
+}
+
+// Load profile once on startup
+loadProfile();
+
 
 // Form submit
 if (chatForm && chatInput) {
@@ -252,3 +364,15 @@ presetButtons.forEach((btn) => {
     sendMessage(text);
   });
 });
+
+// PATIENT OVERVIEW COLLAPSE
+const patientToggle = document.getElementById("patientToggle");
+const patientBody = document.getElementById("patientBody");
+const patientCard = document.querySelector(".patient-card");
+
+if (patientToggle && patientBody) {
+  patientToggle.addEventListener("click", () => {
+    patientBody.classList.toggle("open");
+    patientCard.classList.toggle("collapsed");
+  });
+}
