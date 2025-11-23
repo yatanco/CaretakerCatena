@@ -376,3 +376,29 @@ if (patientToggle && patientBody) {
     patientCard.classList.toggle("collapsed");
   });
 }
+// === COLLAPSIBLE SECTIONS ===
+document.querySelectorAll(".collapse-toggle").forEach((btn) => {
+  const targetId = btn.getAttribute("data-target");
+  const body = document.getElementById(targetId);
+
+  // Default open state
+  btn.classList.add("open");
+  body.classList.remove("closed");
+
+  btn.addEventListener("click", () => {
+    const isOpen = btn.classList.contains("open");
+
+    if (isOpen) {
+      btn.classList.remove("open");
+      body.classList.add("closed");
+    } else {
+      btn.classList.add("open");
+      body.classList.remove("closed");
+
+      // Smooth scroll into view when opening
+      setTimeout(() => {
+        body.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 180);
+    }
+  });
+});
