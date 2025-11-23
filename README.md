@@ -1,6 +1,6 @@
 # 🧠 CaretakerCatena  
 **AI Companion for Alzheimer’s Caregivers**  
-Built for the 0G Hackathon
+Built for the EthGlobal Hackathon
 
 ---
 
